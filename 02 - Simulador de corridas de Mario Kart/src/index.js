@@ -62,6 +62,20 @@ async function logRollResult(characterName, block, diceResult, attribute) {
     console.log(`${characterName} fez um teste de ${block}: ${attribute} + ${diceResult} = ${attribute + diceResult}`)
 }
 
+async function winnerVerification(player1, player2) {
+    console.log("Resultado final:\n")
+    console.log(`${player1.name}: ${player1.score} pontos`)
+    console.log(`${player2.name}: ${player2.score} pontos\n`)
+
+    if (player1.score > player2.score) 
+        console.log(`🏆 ${player1.name} é o grande vencedor! 🏆`)
+    else if (player2.score > player1.score) 
+        console.log(`🏆 ${player2.name} é o grande vencedor! 🏆`)
+    else 
+        console.log("Empate. Não houve vencedor nessa corrida.")
+    
+}
+
 async function playRaceEngine(player1, player2) {
     //rounds
     for (let i = 1; i <= 5; i++) {
@@ -89,8 +103,6 @@ async function playRaceEngine(player1, player2) {
 
             await logRollResult(player1.name, block, diceResult1, player1.speed)
             await logRollResult(player2.name, block, diceResult2, player2.speed)
-
-            
         }
         if(block === "CURVA ↩"){
             totalTestSkill1 = player1.maneuverability + diceResult1
@@ -112,16 +124,22 @@ async function playRaceEngine(player1, player2) {
             //same if as above
             if(totalTestSkill1 > totalTestSkill2 && player2.score > 0){
                 player2.score--
-                console.log(`🏆 ${player1.name} venceu o confronto 🏆! ${player2.name} perdeu 1 ponto `)
+                console.log(`🏆 ${player1.name} venceu o confronto 🏆! ${player2.name} perdeu 1 ponto \n`)
             }
             
             //player1.score -= totalTestSkill2 > totalTestSkill1 && player1.score > 0 ? 1 : 0
             //same if as above
             if(totalTestSkill2 > totalTestSkill1 && player1.score > 0){
                 player1.score--
-                console.log(`🏆 ${player2.name} venceu o confronto 🏆! ${player1.name} perdeu 1 ponto `)
+                console.log(`🏆 ${player2.name} venceu o confronto 🏆! ${player1.name} perdeu 1 ponto \n`)
             }
-            console.log(totalTestSkill1 === totalTestSkill2 ? "Empate. Nenhum ponto foi perdido nesse bloco " : "")
+
+            //console.log(totalTestSkill1 === totalTestSkill2 ? "Empate. Nenhum ponto foi perdido nesse bloco \n" : "")
+            //same if as above
+            if(totalTestSkill1 === totalTestSkill2){
+                console.log("Empate. Nenhum ponto foi perdido nesse bloco \n")
+            }
+            
             /*
             if (totalTestSkill1 > totalTestSkill2) {
                 if(player2.score > 0){
@@ -154,13 +172,7 @@ async function playRaceEngine(player1, player2) {
     }
 
     //winner verification
-    if (player1.score > player2.score) {
-        console.log(`🏆 ${player1.name} é o grande vencedor! 🏆`)
-    } else if (player2.score > player1.score) {
-        console.log(`🏆 ${player2.name} é o grande vencedor! 🏆`)
-    } else {
-        console.log("Empate. Não houve vencedor nessa corrida.")
-    }
+    winnerVerification(player1, player2)
 }
 
 (async function main() {
