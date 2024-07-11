@@ -27,8 +27,12 @@ async function definePlayerCharacters(characters = []) {
     return [player1, player2]
 }
 
-async function rollDice() {
+async function rollD6() {
     return Math.floor(Math.random() * 6) + 1
+}
+
+async function rollD2() {
+    return Math.floor(Math.random() * 2) + 1
 }
 
 function setCharacters() {
@@ -38,7 +42,9 @@ function setCharacters() {
     const bowser = new character('Bowser', 5, 2, 5)
     const yoshi = new character("Yoshi", 2, 4, 3)
     const donkey_kong = new character("Donkey Kong", 2, 2, 5)
-    return [mario, luigi, peach, bowser, yoshi, donkey_kong]
+    const wario = new character("Wario", 3, 3, 4)
+    const toad = new character("Toad", 4, 3, 2)
+    return [mario, luigi, peach, bowser, yoshi, donkey_kong, wario, toad]
 }
 
 async function getRandomBlock() {
@@ -67,18 +73,18 @@ async function winnerVerification(player1, player2) {
     console.log(`${player1.name}: ${player1.score} pontos`)
     console.log(`${player2.name}: ${player2.score} pontos\n`)
 
-    if (player1.score > player2.score) 
+    if (player1.score > player2.score)
         console.log(`🏆 ${player1.name} é o grande vencedor! 🏆`)
-    else if (player2.score > player1.score) 
+    else if (player2.score > player1.score)
         console.log(`🏆 ${player2.name} é o grande vencedor! 🏆`)
-    else 
+    else
         console.log("Empate. Não houve vencedor nessa corrida.")
-    
 }
 
+
 async function playRaceEngine(player1, player2) {
-    //rounds
-    for (let i = 1; i <= 5; i++) {
+    //5 rounds
+    for (let i = 1; i <= 15; i++) {
         console.log(`🔴🟡🟢 Rodada ${i}`)
 
         //adding delay
@@ -89,8 +95,8 @@ async function playRaceEngine(player1, player2) {
         console.log(`Bloco: ${block}`)
 
         //roll the dice
-        let diceResult1 = await rollDice()
-        let diceResult2 = await rollDice()
+        let diceResult1 = await rollD6()
+        let diceResult2 = await rollD6()
 
         //skill test
         let totalTestSkill1 = 0
@@ -104,7 +110,7 @@ async function playRaceEngine(player1, player2) {
             await logRollResult(player1.name, block, diceResult1, player1.speed)
             await logRollResult(player2.name, block, diceResult2, player2.speed)
         }
-        if(block === "CURVA ↩"){
+        if (block === "CURVA ↩") {
             totalTestSkill1 = player1.maneuverability + diceResult1
             totalTestSkill2 = player2.maneuverability + diceResult2
 
@@ -112,53 +118,73 @@ async function playRaceEngine(player1, player2) {
             await logRollResult(player2.name, block, diceResult2, player2.maneuverability)
 
         }
-        if(block === "CONFRONTO 🥊"){
+        if (block === "CONFRONTO 🥊") {
             totalTestSkill1 = player1.power + diceResult1
             totalTestSkill2 = player2.power + diceResult2
 
             await logRollResult(player1.name, block, diceResult1, player1.power)
             await logRollResult(player2.name, block, diceResult2, player2.power)
 
-            //ternary operator if
-            //player2.score -= totalTestSkill1 > totalTestSkill2 && player2.score > 0 ? 1 : 0
-            //same if as above
-            if(totalTestSkill1 > totalTestSkill2 && player2.score > 0){
-                player2.score--
-                console.log(`🏆 ${player1.name} venceu o confronto 🏆! ${player2.name} perdeu 1 ponto \n`)
-            }
-            
-            //player1.score -= totalTestSkill2 > totalTestSkill1 && player1.score > 0 ? 1 : 0
-            //same if as above
-            if(totalTestSkill2 > totalTestSkill1 && player1.score > 0){
-                player1.score--
-                console.log(`🏆 ${player2.name} venceu o confronto 🏆! ${player1.name} perdeu 1 ponto \n`)
-            }
+            //loser effect:
+            //shell = 1 -> -1 to loser
+            //bomb = 2 -> -2 to loser
 
-            //console.log(totalTestSkill1 === totalTestSkill2 ? "Empate. Nenhum ponto foi perdido nesse bloco \n" : "")
-            //same if as above
-            if(totalTestSkill1 === totalTestSkill2){
-                console.log("Empate. Nenhum ponto foi perdido nesse bloco \n")
-            }
-            
-            /*
+            //winner effect:
+            //1 -> nothing happens
+            //2 -> +1 to winner
             if (totalTestSkill1 > totalTestSkill2) {
-                if(player2.score > 0){
-                player2.score--
+                if (player2.score > 0) {
+                    if (await rollD2() === 1) {
+                        player2.score--
+                        console.log(`🏆 ${player1.name} venceu o confronto 🏆! ${player2.name} perdeu 1 ponto \n`)
+                    } else {
+                        player2.score -= 2
+                        if (player2.score < 0) {
+                            player2.score = 0
+                        }
+                        console.log(`🏆 ${player1.name} venceu o confronto 🏆! ${player2.name} perdeu 2 pontos \n`)
+                    }
+
+
+                    if (await rollD2() === 2) {
+                        player1.score++
+                        console.log(`🏆 ${player1.name} encontrou um turbo e ganhou 1 ponto \n`)
+                    }
+                } else {
+                    console.log("")
                 }
-                console.log(`🏆 ${player1.name} venceu o confronto 🏆`)
+
+
             }
             if (totalTestSkill2 > totalTestSkill1) {
-                if(player1.score > 0){
-                player1.score--
+                if (player1.score > 0) {
+                    if (await rollD2() === 1) {
+                        player1.score--
+                        console.log(`🏆 ${player2.name} venceu o confronto 🏆! ${player1.name} perdeu 1 ponto \n`)
+                    } else {
+                        player1.score -= 2
+                        if (player1.score < 0) {
+                            player1.score = 0
+                        }
+                        console.log(`🏆 ${player2.name} venceu o confronto 🏆! ${player1.name} perdeu 2 pontos \n`)
+                    }
+
+
+                    if (await rollD2() === 2) {
+                        player2.score++
+                        console.log(`🏆 ${player2.name} encontrou um turbo e ganhou 1 ponto \n`)
+                    }
+                } else {
+                    console.log("")
                 }
-                console.log(`🏆 ${player2.name} venceu o confronto 🏆`)
-            } else {
-                console.log("Empate no confronto. Nenhum ponto foi perdido.")
+
             }
-            */
+            if (totalTestSkill1 === totalTestSkill2) {
+                console.log("Empate. Nenhum ponto foi perdido nesse bloco \n")
+            }
         }
 
-        if(block !== "CONFRONTO 🥊"){
+        if (block !== "CONFRONTO 🥊") {
             if (totalTestSkill1 > totalTestSkill2) {
                 player1.score++
                 console.log(`🏆 ${player1.name} venceu o bloco 🏆 \n`)
@@ -167,7 +193,7 @@ async function playRaceEngine(player1, player2) {
                 console.log(`🏆 ${player2.name} venceu o bloco 🏆 \n`)
             } else {
                 console.log("Empate. Não houve vencedor nesse bloco \n")
-            }    
+            }
         }
     }
 
