@@ -1,2 +1,3 @@
 # estudosnode
-My repository of codes and learnings about Node.js
+
+Repositório dedicado aos estudos (e pequenos projetos) dedicados a Node.js
