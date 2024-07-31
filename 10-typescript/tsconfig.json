@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    //target np padrão ECMA
+    "target": "ES6",
+    //module padrão CommonJS para compatibilidade
+    "module": "CommonJS",
+    //configuração do diretório de saída dos arquivos transpilados
+    "outDir": "./dist",
+    //verificação de inicialização, validação e comparação de variáveis
+    "strict": true,
+    //esModuleInterop: true, permite importar módulos de arquivos .js
+    "esModuleInterop": true,
+                                 /* Skip type checking all .d.ts files. */
+  }
+}
